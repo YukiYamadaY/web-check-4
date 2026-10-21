@@ -128,6 +128,14 @@ def pick_shape(merged: dict[str, dict]) -> tuple[str, int]:
 
 def extract_items(page, url: str, state: dict, debug: bool = False) -> list[dict]:
     merged = group_products(collect_anchors(page), url)
+    if debug or not merged:
+        shapes = defaultdict(int)
+        for p in merged:
+            shapes[shape_of(p)] += 1
+        top = sorted(shapes.items(), key=lambda x: -x[1])[:6]
+        log(f"[調査] タイトル: {page.title()[:40]} / リンク数: {len(merged)} / 形: {top}")
+        log(f"[調査] 本文: {page.inner_text('body')[:150]!r}")
+
     if LINK_PATTERN:
         rx = re.compile(LINK_PATTERN)
         items = [it for p, it in merged.items() if rx.search(p)]
@@ -156,7 +164,7 @@ def load_page(page, url: str, first: bool):
         page.reload(wait_until="domcontentloaded", timeout=30000)
         page.wait_for_timeout(2000)
     page.mouse.wheel(0, 2000)
-    page.wait_for_timeout(800)
+    page.wait_for_timeout(6000)
 
 
 def make_embed(item: dict) -> dict:
