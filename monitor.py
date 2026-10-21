@@ -199,11 +199,11 @@ def notify_batch(items: list[dict]):
 
 
 def new_browser(p):
-    browser = p.chromium.launch(headless=True)
+    browser = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
     pages = [
         browser.new_page(
             user_agent=("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                        "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"),
+                         f"(KHTML, like Gecko) Chrome/{browser.version} Safari/537.36"),
             viewport={"width": 1280, "height": 1000},
             locale="ja-JP",
         )
